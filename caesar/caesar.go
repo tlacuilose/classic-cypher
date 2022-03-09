@@ -15,13 +15,13 @@ const (
 
 // Ask for the offset (key)
 func askOffset() (int32, error) {
-	log.Println("Give me the key, (and offset between 1-26):")
+	log.Println("Give me the key, (and offset between -26 and 26):")
 	var off int32
 	_, err := fmt.Scanf("%d", &off)
 	if err != nil {
 		return 0, errors.New("Key for caesar should be an integer.")
 	}
-	if off < -26 && off > 26 {
+	if off < -26 || off > 26 {
 		return 0, errors.New("Key for caesar should be between -26 and 26.")
 	}
 	return off, nil
@@ -45,13 +45,13 @@ func encryptRune(b rune, offset int32) rune {
 // Caesar decryption
 func decryptRune(b rune, offset int32) rune {
 	switch {
-	// Encrypt uppercase abc
+	// Decrypt uppercase abc
 	case b >= 65 && b <= 90:
 		return rune((b-'A'+capMod-offset)%capMod) + 'A'
-	// Encrypt lowercase abc
+	// Decrypt lowercase abc
 	case b >= 97 && b <= 122:
 		return rune((b-'a'+lowMod-offset)%lowMod) + 'a'
-	// Dont encrypt other characters
+	// Dont decrypt other characters
 	default:
 		return b
 	}
@@ -71,7 +71,6 @@ func runCaesarMethod(plainTextFile *os.File, cipherFile *os.File, runeAction fun
 
 		// Get encrypted character
 		r := runeAction(rune(scanner.Bytes()[0]), offset)
-		log.Printf("%s", string(r))
 
 		// Write encrypted character to file
 		_, err = cipherFile.WriteString(string(r))
@@ -96,18 +95,22 @@ func Encrypt(plainTextFile *os.File, cipherFile *os.File) error {
 		return err
 	}
 
+	log.Printf("Encrypted into %s with caesar method.\n", cipherFile.Name())
+
 	return nil
 }
 
 // Decrypt file a to file b, Decrypt(a, b)
-func Decrypt(plainTextFile *os.File, cipherFile *os.File) error {
+func Decrypt(cipherFile *os.File, plainTextFile *os.File) error {
 	// Start decrypting with caesar method.
-	log.Printf("Decrypting file %s with caesar method.\n", plainTextFile.Name())
+	log.Printf("Decrypting file %s with caesar method.\n", cipherFile.Name())
 
-	err := runCaesarMethod(plainTextFile, cipherFile, decryptRune)
+	err := runCaesarMethod(cipherFile, plainTextFile, decryptRune)
 	if err != nil {
 		return err
 	}
+
+	log.Printf("Decrypted into %s with caesar method.\n", plainTextFile.Name())
 
 	return nil
 }

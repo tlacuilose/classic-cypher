@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/tlacuilose/classic-cypher/caesar"
@@ -20,9 +21,15 @@ func main() {
 
 	switch {
 	case cmd.Action == cyphercmd.CaesarEncrypt:
-		caesar.Encrypt(cmd.SourceFile, cmd.TargetFile)
+		err := caesar.Encrypt(cmd.SourceFile, cmd.TargetFile)
+		if err != nil {
+			fmt.Println(err)
+		}
 	case cmd.Action == cyphercmd.CaesarDecrypt:
-		caesar.Decrypt(cmd.SourceFile, cmd.TargetFile)
+		err := caesar.Decrypt(cmd.SourceFile, cmd.TargetFile)
+		if err != nil {
+			fmt.Println(err)
+		}
 	case cmd.Action == cyphercmd.VigenereEncrypt:
 		log.Printf("Encrypting %s with vigenere.", cmd.SourceFile.Name())
 	case cmd.Action == cyphercmd.VigenereDecrypt:
