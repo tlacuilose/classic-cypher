@@ -24,6 +24,10 @@ func askOffset() (int32, error) {
 	if off < -26 || off > 26 {
 		return 0, errors.New("Key for caesar should be between -26 and 26.")
 	}
+
+	if off < 0 {
+		return capMod + off, nil
+	}
 	return off, nil
 }
 

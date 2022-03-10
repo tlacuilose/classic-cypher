@@ -63,6 +63,10 @@ func TestCaesarMethod(t *testing.T) {
 	execCipherMethod("caesar", "3", "3", "texts/plaintext", false, t)
 }
 
+func TestCaesarNegMethod(t *testing.T) {
+	execCipherMethod("caesar", "-22", "-22", "texts/plaintext_neg", false, t)
+}
+
 func TestCaesarCapsMethod(t *testing.T) {
 	execCipherMethod("caesar", "3", "3", "texts/plaintext_caps", false, t)
 }

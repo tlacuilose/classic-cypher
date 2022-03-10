@@ -1,4 +1,4 @@
-# CMD Cipher
+# CMD Cypher
 
 Command to encrypt and decrupt .txt files using classic methods: [caesar](https://mathworld.wolfram.com/CaesarsMethod.html) and [vigenere](https://pages.mtu.edu/~shene/NSF-4/Tutorial/VIG/Vig-Base.html)
 
