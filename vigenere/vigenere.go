@@ -60,6 +60,44 @@ func decryptRune(b rune, offset int32) rune {
 	}
 }
 
+// Returns next offset and next pointer
+func takeNextOffset(word string, pointer int) (int32, int, error) {
+	// Save the pointer to prevent infinite loop
+	firstPointer := pointer
+
+	// Get and offset
+	var offset int32 = -1
+	var b byte
+	for offset == -1 {
+		// Take the current letter pointed in the word
+		b = word[pointer]
+
+		if b >= 65 && b <= 90 {
+			// Return offset for uppercase
+			offset = int32(1 + b - 'A')
+		} else if b >= 97 && b <= 122 {
+			// Return offset for lowercase
+			offset = int32(1 + b - 'a')
+		}
+		// Dont change offset if character in word is not a letter
+
+		// Update pointer to point into next letter
+		pointer += 1
+		if pointer >= len(word) {
+			// Return to first letter at the end
+			pointer = 0
+		}
+
+		// Break loop if the pointer looped
+		if pointer == firstPointer {
+			return 0, 0, errors.New("Could not find a valid offset in word (key), only use azAZ.")
+		}
+	}
+
+	// Return the next offset and the currect pointer
+	return offset, pointer, nil
+}
+
 func runVigenereMethod(plainTextFile *os.File, cipherFile *os.File, runeAction func(rune, int32) rune) error {
 	// Ask for offset
 	word, err := askWord()
@@ -67,6 +105,9 @@ func runVigenereMethod(plainTextFile *os.File, cipherFile *os.File, runeAction f
 		return err
 	}
 
+	// Offset for that letter
+	var offset int32
+	/// Pointer for the next offset.
 	wordPointer := 0
 
 	// Scan character by character
@@ -74,8 +115,11 @@ func runVigenereMethod(plainTextFile *os.File, cipherFile *os.File, runeAction f
 	scanner.Split(bufio.ScanRunes)
 	for scanner.Scan() {
 
-		// Get the offset from the position of the word pointer
-		offset := int32(word[wordPointer])
+		// Get the next offset and update the word pointer.
+		offset, wordPointer, err = takeNextOffset(word, wordPointer)
+		if err != nil {
+			return err
+		}
 
 		// Get encrypted character
 		r := runeAction(rune(scanner.Bytes()[0]), offset)
@@ -84,11 +128,6 @@ func runVigenereMethod(plainTextFile *os.File, cipherFile *os.File, runeAction f
 		_, err = cipherFile.WriteString(string(r))
 		if err != nil {
 			return err
-		}
-
-		wordPointer += 1
-		if wordPointer >= len(word) {
-			wordPointer = 0
 		}
 	}
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/tlacuilose/classic-cypher/caesar"
 	"github.com/tlacuilose/classic-cypher/cyphercmd"
+	"github.com/tlacuilose/classic-cypher/vigenere"
 )
 
 func main() {
@@ -30,9 +31,15 @@ func main() {
 			log.Println(err)
 		}
 	case cmd.Action == cyphercmd.VigenereEncrypt:
-		log.Printf("Encrypting %s with vigenere.", cmd.SourceFile.Name())
+		err := vigenere.Encrypt(cmd.SourceFile, cmd.TargetFile)
+		if err != nil {
+			log.Println(err)
+		}
 	case cmd.Action == cyphercmd.VigenereDecrypt:
-		log.Printf("Decrypting %s with vigenere.", cmd.SourceFile.Name())
+		err := vigenere.Decrypt(cmd.SourceFile, cmd.TargetFile)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 }
